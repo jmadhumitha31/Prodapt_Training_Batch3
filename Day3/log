@@ -1,0 +1,23 @@
+#Function to count the Errors
+count_errors(){
+ echo "Number of error messages: "
+ grep-c "ERROR" server.log
+ }
+ #funnction to display warning messages
+ show_warning(){
+  echo "WARNING MESSAGES"
+  grep "WARNING" sever.log
+
+ #function to replace ERROR with CRITICAL
+ replace_error(){
+  echo "Replace ERRor with critical"
+  sed 's/ERROR/CRITICAL/g' server.log
+
+
+  echo "========================================"
+  echo            LOG FILE ANAKYSER
+  echo "========================================"
+
+
+
+
