@@ -1,0 +1,22 @@
+file=open('student.txt','r')
+data=file.read()
+print(data)
+file.close()
+
+
+# file=open('student.txt','w')
+# file.write("this is written line of new text\n")
+# file.write("This is another line of text\n")
+# file.close()
+
+file=open('student.txt','a+')
+file.write("this is written write and read")
+file.write("this is another")
+file.seek(0)
+d=file.read()
+print(d)
+file.close()
+# file=open('student.txt','r')
+# data=file.read()
+# print(data)
+# file.close()
