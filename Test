@@ -1,0 +1,141 @@
+Create a tests folder with the following files.
+
+tests/test_subscriber.py
+
+import unittest
+from models.subscriber import Subscriber
+
+
+class TestSubscriber(unittest.TestCase):
+
+    def test_recharge(self):
+        s = Subscriber(
+            "S101",
+            "John",
+            25,
+            "9876543210",
+            "9876543210",
+            "AAD123",
+            500
+        )
+
+        s.recharge(200)
+
+        self.assertEqual(s.balance, 700)
+
+    def test_deduct(self):
+        s = Subscriber(
+            "S102",
+            "David",
+            28,
+            "9999999999",
+            "9999999999",
+            "AAD456",
+            1000
+        )
+
+        result = s.deduct(300)
+
+        self.assertTrue(result)
+        self.assertEqual(s.balance, 700)
+
+    def test_insufficient_balance(self):
+        s = Subscriber(
+            "S103",
+            "Sam",
+            30,
+            "8888888888",
+            "8888888888",
+            "AAD789",
+            100
+        )
+
+        result = s.deduct(500)
+
+        self.assertFalse(result)
+
+
+---
+
+tests/test_plan.py
+
+import unittest
+from models.plan import Prepaid, Postpaid, DataPack
+
+
+class TestPlan(unittest.TestCase):
+
+    def test_prepaid_bill(self):
+        p = Prepaid("Smart", "1GB", 200)
+        self.assertEqual(p.bill(2), 400)
+
+    def test_postpaid_bill(self):
+        p = Postpaid("Business", "2GB", 500)
+        self.assertEqual(p.bill(1), 590)
+
+    def test_datapack_bill(self):
+        p = DataPack("Net", "2GB", 300)
+        self.assertEqual(p.bill(1), 350)
+
+
+---
+
+tests/test_validator.py
+
+import unittest
+from models.subscriber import Subscriber
+from utils.validator import is_eligible
+
+
+class TestValidator(unittest.TestCase):
+
+    def test_valid_subscriber(self):
+        s = Subscriber(
+            "S1",
+            "Alex",
+            25,
+            "9876543210",
+            "9876543210",
+            "AAD001",
+            500
+        )
+
+        self.assertTrue(is_eligible(s))
+
+    def test_invalid_subscriber(self):
+        s = Subscriber(
+            "S2",
+            "Tom",
+            16,
+            "9876543211",
+            "9876543211",
+            "",
+            500
+        )
+
+        self.assertFalse(is_eligible(s))
+
+
+---
+
+Run the Tests
+
+From the project root, run:
+
+python -m unittest discover tests
+
+Or run individual test files:
+
+python -m unittest tests.test_subscriber
+
+python -m unittest tests.test_plan
+
+python -m unittest tests.test_validator
+
+These test files verify the key functionality required in the AirLink Telecom case study:
+
+Subscriber recharge and balance deduction
+
+Plan bill calculation (Prepaid, Postpaid, DataPack)
+
+Subscriber eligibility validation 
