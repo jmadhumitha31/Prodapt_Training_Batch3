@@ -1,0 +1,67 @@
+import unittest
+from models.subscriber import Subscriber
+from models.plan import Prepaid
+from models.connection import Connection
+
+
+class TestConnection(unittest.TestCase):
+
+    def setUp(self):
+        self.subscriber = Subscriber(
+            "S101",
+            "Alex",
+            25,
+            "9876543210",
+            "9876543210",
+            "AAD123",
+            1000
+        )
+
+        self.plan = Prepaid(
+            "Smart Saver",
+            "1GB/day",
+            200
+        )
+
+    def test_connection_creation(self):
+
+        amount = self.plan.bill(2)
+
+        connection = Connection(
+            self.subscriber,
+            self.plan,
+            2,
+            amount
+        )
+
+        self.assertEqual(connection.subscriber.name, "Alex")
+        self.assertEqual(connection.plan.name, "Smart Saver")
+        self.assertEqual(connection.months, 2)
+        self.assertEqual(connection.amount_paid, 400)
+        self.assertEqual(connection.status, "ACTIVE")
+
+    def test_connection_id(self):
+
+        connection = Connection(
+            self.subscriber,
+            self.plan,
+            1,
+            200
+        )
+
+        self.assertIsNotNone(connection.connection_id)
+
+    def test_connection_status(self):
+
+        connection = Connection(
+            self.subscriber,
+            self.plan,
+            1,
+            200
+        )
+
+        self.assertEqual(connection.status, "ACTIVE")
+
+
+if __name__ == "__main__":
+    unittest.main()
