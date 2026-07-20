@@ -1,0 +1,132 @@
+Great! Let's continue with the Data and Validator modules.
+
+
+---
+
+5. data/datastore.py
+
+DATASTORE = {
+    "subscribers": {},
+    "plans": {},
+    "connections": {}
+}
+
+
+---
+
+6. data/seed_data.py
+
+from models.subscriber import Subscriber
+from models.plan import Prepaid, Postpaid, DataPack
+from data.datastore import DATASTORE
+
+
+def load_seed_data():
+
+    # Subscribers
+    s1 = Subscriber(
+        "SUB01",
+        "Karthik",
+        26,
+        "9876543210",
+        "9876543210",
+        "AAD-4821-9034",
+        2000
+    )
+
+    s2 = Subscriber(
+        "SUB02",
+        "Divya",
+        34,
+        "9876543211",
+        "9876543211",
+        "AAD-7733-1268",
+        5000
+    )
+
+    s3 = Subscriber(
+        "SUB03",
+        "Vimal",
+        16,
+        "9876543212",
+        "9876543212",
+        "",
+        500
+    )
+
+    DATASTORE["subscribers"][s1.person_id] = s1
+    DATASTORE["subscribers"][s2.person_id] = s2
+    DATASTORE["subscribers"][s3.person_id] = s3
+
+    # Plans
+    p1 = Prepaid("Smart Saver", "1GB/day", 200)
+    p2 = Postpaid("Business Pro", "2GB/day", 500)
+    p3 = DataPack("NetMax", "2GB/day", 300)
+
+    DATASTORE["plans"][p1.plan_id] = p1
+    DATASTORE["plans"][p2.plan_id] = p2
+    DATASTORE["plans"][p3.plan_id] = p3
+
+
+---
+
+7. utils/validator.py
+
+from data.datastore import DATASTORE
+
+
+def positive_int(value):
+    return value > 0
+
+
+def is_eligible(subscriber):
+
+    if subscriber.age >= 18 and subscriber.id_proof != "":
+        return True
+
+    return False
+
+
+def has_active_connection(subscriber):
+
+    for connection in DATASTORE["connections"].values():
+
+        if (connection.subscriber.person_id == subscriber.person_id
+                and connection.status == "ACTIVE"):
+            return True
+
+    return False
+
+
+---
+
+Folder Structure Completed So Far
+
+airlink_telecom/
+
+models/
+    person.py
+    subscriber.py
+    plan.py
+    connection.py
+
+data/
+    datastore.py
+    seed_data.py
+
+utils/
+    validator.py
+
+
+---
+
+Next Part
+
+In the next response, I'll provide:
+
+✅ services/subscriber_service.py
+
+✅ services/plan_service.py
+
+
+These implement the CRUD operations for subscribers and plans as described in the case study. 
