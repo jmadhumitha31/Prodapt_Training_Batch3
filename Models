@@ -1,0 +1,158 @@
+Great! We'll build the project step by step. Here are the first four model files.
+
+
+---
+
+1. models/person.py
+
+class Person:
+    def __init__(self, person_id, name, age, phone):
+        self.person_id = person_id
+        self.name = name
+        self.age = age
+        self.phone = phone
+
+    def __str__(self):
+        return f"{self.person_id} - {self.name} ({self.age})"
+
+
+---
+
+2. models/subscriber.py
+
+from models.person import Person
+
+
+class Subscriber(Person):
+
+    def __init__(self, person_id, name, age, phone, mobile_no, id_proof, balance):
+        super().__init__(person_id, name, age, phone)
+        self.mobile_no = mobile_no
+        self.id_proof = id_proof
+        self.__balance = balance
+
+    @property
+    def balance(self):
+        return self.__balance
+
+    def recharge(self, amount):
+        self.__balance += amount
+
+    def deduct(self, amount):
+        if amount <= self.__balance:
+            self.__balance -= amount
+            return True
+        return False
+
+    def __str__(self):
+        return f"{self.name} | {self.mobile_no} | Balance: {self.balance}"
+
+
+---
+
+3. models/plan.py
+
+class Plan:
+
+    company = "AirLink"
+    id_prefix = "PLAN-"
+    activation_fee = 0
+    counter = 100
+
+    def __init__(self, name, data_per_day, monthly_price):
+        Plan.counter += 1
+        self.plan_id = self.id_prefix + str(Plan.counter)
+        self.name = name
+        self.data_per_day = data_per_day
+        self.monthly_price = monthly_price
+
+    @property
+    def monthly_price(self):
+        return self.__monthly_price
+
+    @monthly_price.setter
+    def monthly_price(self, price):
+        if price <= 0:
+            raise ValueError("Price must be greater than zero")
+        self.__monthly_price = price
+
+    def bill(self, months):
+        return self.monthly_price * months
+
+    def __eq__(self, other):
+        return self.monthly_price == other.monthly_price
+
+    def __lt__(self, other):
+        return self.monthly_price < other.monthly_price
+
+    def __str__(self):
+        return f"{self.plan_id} {self.name} ₹{self.monthly_price}"
+
+
+class Prepaid(Plan):
+    id_prefix = "PRE-"
+    activation_fee = 0
+
+    def bill(self, months):
+        return self.monthly_price * months
+
+
+class Postpaid(Plan):
+    id_prefix = "POST-"
+    activation_fee = 100
+
+    def bill(self, months):
+        return self.monthly_price * months * 1.18
+
+
+class DataPack(Plan):
+    id_prefix = "DATA-"
+    activation_fee = 50
+
+    def bill(self, months):
+        return self.monthly_price * months + 50
+
+
+---
+
+4. models/connection.py
+
+class Connection:
+
+    counter = 9000
+
+    def __init__(self, subscriber, plan, months, amount_paid):
+        Connection.counter += 1
+
+        self.connection_id = Connection.counter
+        self.subscriber = subscriber
+        self.plan = plan
+        self.months = months
+        self.amount_paid = amount_paid
+        self.status = "ACTIVE"
+
+    def __str__(self):
+        return (f"Connection ID: {self.connection_id}\n"
+                f"Subscriber: {self.subscriber.name}\n"
+                f"Plan: {self.plan.name}\n"
+                f"Amount Paid: {self.amount_paid}\n"
+                f"Status: {self.status}")
+
+    def __del__(self):
+        print(f"[ARCHIVE] Connection {self.connection_id} closed")
+
+
+---
+
+Next Part
+
+In the next response, I'll provide:
+
+data/datastore.py
+
+data/seed_data.py
+
+utils/validator.py
+
+
+These will let you store subscribers, plans, and connections exactly as required by the case study. 
