@@ -1,0 +1,209 @@
+Below are the service files and a simple main.py.
+
+
+---
+
+services/subscriber_service.py
+
+from data.datastore import DATASTORE
+from models.subscriber import Subscriber
+
+
+class SubscriberService:
+
+    def add_subscriber(self):
+        person_id = input("Subscriber ID: ")
+        name = input("Name: ")
+        age = int(input("Age: "))
+        phone = input("Phone: ")
+        mobile = input("Mobile No: ")
+        id_proof = input("ID Proof: ")
+        balance = float(input("Balance: "))
+
+        sub = Subscriber(person_id, name, age, phone,
+                         mobile, id_proof, balance)
+
+        DATASTORE["subscribers"][person_id] = sub
+        print("Subscriber Added Successfully.")
+
+    def view_subscribers(self):
+        for sub in DATASTORE["subscribers"].values():
+            print(sub)
+
+    def search_subscriber(self, sid):
+        return DATASTORE["subscribers"].get(sid)
+
+    def delete_subscriber(self, sid):
+        if sid in DATASTORE["subscribers"]:
+            del DATASTORE["subscribers"][sid]
+            print("Subscriber Deleted")
+        else:
+            print("Subscriber Not Found")
+
+
+---
+
+services/plan_service.py
+
+from data.datastore import DATASTORE
+from models.plan import Prepaid, Postpaid, DataPack
+
+
+class PlanService:
+
+    def add_plan(self):
+
+        print("1.Prepaid")
+        print("2.Postpaid")
+        print("3.DataPack")
+
+        choice = int(input("Choose Plan Type: "))
+
+        name = input("Plan Name: ")
+        data = input("Data Per Day: ")
+        price = float(input("Monthly Price: "))
+
+        if choice == 1:
+            plan = Prepaid(name, data, price)
+
+        elif choice == 2:
+            plan = Postpaid(name, data, price)
+
+        else:
+            plan = DataPack(name, data, price)
+
+        DATASTORE["plans"][plan.plan_id] = plan
+
+        print("Plan Added Successfully")
+
+    def view_plans(self):
+
+        for plan in DATASTORE["plans"].values():
+            print(plan)
+
+
+---
+
+services/connection_service.py
+
+from data.datastore import DATASTORE
+from models.connection import Connection
+from utils.validator import is_eligible
+
+
+class ConnectionService:
+
+    def create_connection(self):
+
+        sid = input("Subscriber ID: ")
+
+        subscriber = DATASTORE["subscribers"].get(sid)
+
+        if subscriber is None:
+            print("Subscriber Not Found")
+            return
+
+        if not is_eligible(subscriber):
+            print("Subscriber Not Eligible")
+            return
+
+        print("\nAvailable Plans")
+
+        for pid, plan in DATASTORE["plans"].items():
+            print(pid, plan)
+
+        pid = input("Enter Plan ID: ")
+
+        plan = DATASTORE["plans"].get(pid)
+
+        if plan is None:
+            print("Invalid Plan")
+            return
+
+        months = int(input("Months: "))
+
+        amount = plan.bill(months)
+
+        if subscriber.deduct(amount):
+
+            connection = Connection(
+                subscriber,
+                plan,
+                months,
+                amount
+            )
+
+            DATASTORE["connections"][connection.connection_id] = connection
+
+            print("Connection Created")
+            print(connection)
+
+        else:
+            print("Insufficient Balance")
+
+    def view_connections(self):
+
+        for con in DATASTORE["connections"].values():
+            print(con)
+            print("-" * 40)
+
+
+---
+
+main.py
+
+from data.seed_data import load_seed_data
+from services.subscriber_service import SubscriberService
+from services.plan_service import PlanService
+from services.connection_service import ConnectionService
+
+load_seed_data()
+
+subscriber_service = SubscriberService()
+plan_service = PlanService()
+connection_service = ConnectionService()
+
+while True:
+
+    print("\n===== AIRLINK TELECOM =====")
+    print("1. Add Subscriber")
+    print("2. View Subscribers")
+    print("3. Add Plan")
+    print("4. View Plans")
+    print("5. Create Connection")
+    print("6. View Connections")
+    print("7. Delete Subscriber")
+    print("8. Exit")
+
+    choice = int(input("Enter Choice: "))
+
+    if choice == 1:
+        subscriber_service.add_subscriber()
+
+    elif choice == 2:
+        subscriber_service.view_subscribers()
+
+    elif choice == 3:
+        plan_service.add_plan()
+
+    elif choice == 4:
+        plan_service.view_plans()
+
+    elif choice == 5:
+        connection_service.create_connection()
+
+    elif choice == 6:
+        connection_service.view_connections()
+
+    elif choice == 7:
+        sid = input("Enter Subscriber ID: ")
+        subscriber_service.delete_subscriber(sid)
+
+    elif choice == 8:
+        print("Thank You!")
+        break
+
+    else:
+        print("Invalid Choice")
+
+With the model files, data files, validator, these service classes, and main.py, you have a working menu-driven version of the AirLink Telecom case study. 
